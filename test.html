@@ -1,0 +1,154 @@
+
+    <html lang="zh-cn">
+    <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+	<script type="text/x-mathjax-config">  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\(','\)']]}});</script>
+	<script type="text/javascript"  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="vim.css" rel="stylesheet">
+    </head>
+    <body>
+    <h2 id="angular4-">量身打造angular开发解决方案(4) - 模块化框架</h2>
+<blockquote>
+<p>前端模块化框架肩负着 模块管理、资源加载 两项重要的功能，这两项功能与工具、性能、业务、部署等工程环节都有着非常紧密的联系。因此，模块化框架的设计应该最高优先级考虑工程需要。</p>
+</blockquote>
+<h3 id="1-why-not-requirejsseajsbrowserify">1. Why Not RequireJS/SeaJS/Browserify</h3>
+<p>原因很简单：</p>
+<blockquote>
+<p>以纯前端方式实现模块化框架 <strong>不能</strong> 同时满足 <code>按需加载</code>，<code>请求合并</code> 和 <code>依赖管理</code> 三个需求。</p>
+<p>导致这个问题的根本原因是： <code>纯前端方式只能在运行时分析依赖关系。</code></p>
+<p>详细论述参见： <a href="https://github.com/fouber/blog/issues/4">「前端工程与模块化框架」</a></p>
+</blockquote>
+<p>先谈谈<code>Browserify</code>，其实我一直不喜欢这东西，所有文件都打包在一起，太臃肿了，直接排除掉。它宣称的<code>前后端代码复用</code>也是个伪需求，实际工程中没有多少需要前后端复用的东西。无法理解它的存在意义。</p>
+<p>而使用<code>RequireJS/SeaJS</code>之类的纯前端框架，是需要在运行时才去分析模块依赖。不可避免的会产生<code>串行依赖加载问题</code>，即使它提供的<code>combo</code>批量加载功能，也只是局部缓解。</p>
+<p>要兼顾<code>性能</code>的同时解决模块化<code>依赖管理</code>和<code>按需加载</code>问题，其关键点在于：</p>
+<blockquote>
+<p>在<strong>构建期</strong>就提前分析资源依赖，而不能到<strong>运行时</strong>才去分析模块间的依赖关系。</p>
+</blockquote>
+<h3 id="2">2. 设计自己的模块化框架</h3>
+<p>其实没那么难，经过<code>CommonJS</code> / <code>AMD</code> / <code>CMD</code>这么多年的发展，模块化框架的思想和规范都已经有很好的总结和范式了。
+只需要以下三个接口即可（发现没？跟其他规范几乎一样）：</p>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>定义</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模块定义</td>
+<td><code>define(id, function factory(require, exports, module){});</code></td>
+<td>模块定义</td>
+</tr>
+<tr>
+<td>异步加载</td>
+<td><code>require.async(ids, callback);</code></td>
+<td>异步加载多个模块，支持combo</td>
+</tr>
+<tr>
+<td>框架配置</td>
+<td><code>require.config(options);</code></td>
+<td>资源依赖表和其他配置</td>
+</tr>
+</tbody>
+</table>
+<p>这里容我偷个懒，直接引入 <a href="https://github.com/scrat-team/scrat.js">scrat.js</a> 即可满足我们的需求。</p>
+<p><strong>关键特性：</strong>
+- 无需运行时分析依赖，通过和构建工具的配合，直接输入资源依赖表。
+- 支持把资源缓存到<code>localstorage</code>，第二次访问时则无需加载。
+- 支持<code>combo</code>批量加载。
+- 支持通过URL参数临时屏蔽<code>combo</code>和<code>cache</code>，便于调试。</p>
+<p>需要注意的是，它使用<code>hash</code>来标识当前版本，当版本升级时会直接清空全部缓存文件，因为：</p>
+<blockquote>
+<p>性能优化既是一个工程问题，又是一个统计问题。
+只关注一个页面的首次加载是很片面的。还需考虑全站页面间跳转、项目迭代后更新资源等情况下的优化策略。</p>
+<p>-- 摘自<a href="https://github.com/fouber/blog/blob/master/201405/01.md">前端工程与性能优化</a></p>
+</blockquote>
+<p>PS: 若你还是希望使用<code>seajs</code>则可以参考下 <a href="https://github.com/fouber/spmx">spmx</a> 以及它对应的 <a href="https://github.com/fouber/fis-postpackager-seajs">fis-postpackager-seajs</a> 。</p>
+<h3 id="3">3. 构建期分析资源依赖表</h3>
+<p>在<code>FIS</code>配置的<code>modules.postpackager</code>里面配置一个处理器即可，参见<code>frameworkConf.js</code></p>
+<p>资源依赖表主要包含<code>依赖(deps)</code>和<code>别名(alias)</code>。</p>
+<p><strong>主要思路：</strong>
+- 获取<code>FIS</code>生成的<code>map资源映射表</code>。
+- 通过<code>component.json</code>递归分析生态模块的依赖，并为它们建立别名。
+- 获取所有内部模块的主文件，收集它的依赖，并为它建立别名。
+- 把收集到的<code>资源依赖表</code>输出，并替换掉标识为<code>isView</code>的页面文件的<code>__FRAMEWORK_CONFIG__</code>。</p>
+<p>需注意的地方：
+- 由于<code>FIS</code>架构问题，不支持在<code>单文件编译期</code>增加额外文件。
+- 所以当我们为了缓存等需求，需要把css和tpl转换时，只能在这里进行一定的hack。</p>
+<p>示例如下：
+    require.config({
+      "cache": true,
+      "urlPattern": "/%s",
+      "comboPattern": "/co??%s",
+      "version": "0.0.1",
+      "name": "ngfis-showcase",
+      "combo": true,
+      "hash": "803d336",
+      "alias": {
+        "app": "app/app.js",
+        "modules/menu": "modules/menu/menu.js",
+        "shared/utils": "shared/utils/utils.js"
+      },
+      "deps": {
+        "modules/menu/menu.js": [
+          "modules/menu/menu.css"
+        ]
+      }
+    });
+    require.async(['app'], function(app){</p>
+<pre class="codehilite"><code>});</code></pre>
+
+
+<h3 id="4">4. 自动包裹代码</h3>
+<h5 id="41-define">4.1 define</h5>
+<p>如需求调研中提到的「像<code>NodeJS</code>一样编码」，所以我们可以通过工具来自动包裹代码。</p>
+<p>在<code>FIS</code>配置的<code>modules.postprocessor.js</code>里面配置一个处理器即可，参见<code>define.js</code>。</p>
+<p>摘抄部分代码如下，实际项目中一般还需要分析<code>component.json</code>等文件生成<code>exports</code>等信息。</p>
+<pre class="codehilite"><code>module.exports = function(content, file){
+  if(file.isMod){
+    //包裹define
+    content = &quot;define('&quot; + file.getId() + &quot;', function(require, exports, module){\n\n&quot; + content + &quot;\n\n});&quot;;
+  }
+  return content;
+};</code></pre>
+
+
+<p>编译体验下：<br>
+<img alt="/ngfis-define" src="assets/ngfis-define.png" /></p>
+<h5 id="42-annotate">4.2 annotate</h5>
+<p>「自动生成依赖注入声明」功能，也是顺便在这里实现的， 把<code>ng-annotate</code>包装成FIS插件即可。
+参见<code>annotate.js</code>。</p>
+<p>关键代码如下：</p>
+<pre class="codehilite"><code>var ngAnnotate = require('ng-annotate');
+module.exports = function(content, file){
+  if(file.isJsLike) {
+    var result = ngAnnotate(content, {add: true, single_quotes: true});
+    if(!result.errors){
+      content = result.src;
+    }else{
+      result.errors.forEach(function (error) {
+        fis.log.error(error);
+      });
+    }
+  }
+  return content;
+};</code></pre>
+
+
+<h3 id="5">5. 按需加载</h3>
+<p><code>Angular</code>目前是不支持按需加载的，所以我们只能通过一定的方法进行hack。</p>
+<p><strong>按需加载有几种实现方式：</strong>
+- 根据URL参数，加载对应的依赖，然后手动boostrap，不支持单页面。
+- 只实现<code>controller/service/directive</code>的按需加载， 支持<code>ngRoute</code>和<code>ui-router</code>。
+- 实现完整的按需加载， 支持<code>module</code>的按需加载，具体参见<a href="https://github.com/ocombe/ocLazyLoad">ocLazyLoad</a> 。(本文不涉及到该方法)</p>
+<p><strong>主要思路：</strong>
+  - 在<code>config</code>期保存<code>$provider</code>的相关引用。
+  - 利用<code>ngRoute/ui-router</code>的<code>resolve</code>属性，通过模块化框架加载文件。
+  - 加载回来的<code>controller</code>和它对应的依赖通过上面保存的引用去动态注册。
+  - <code>Angular</code>执行对应的<code>Controller</code>，并呈现给用户。</p>
+<p>具体参见<code>angular-lazyload</code>的相关代码。</p>
+    </body>
+    </html>
+    
