@@ -1,0 +1,8 @@
+site_name: Space
+theme:
+  name: 'material'
+  language: 'zh'
+  
+pages:
+    - Home: index.md
+    - About: about.md

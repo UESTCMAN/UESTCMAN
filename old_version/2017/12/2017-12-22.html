@@ -1,0 +1,106 @@
+<!DOCTYPE html><!-- saved from url=(0047)https://tinyletter.com/Lution/letters/message-2 --><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>  </title><meta content="width=device-width" name="viewport"><meta content="IE=7, IE=9" http-equiv="X-UA-Compatible"><link rel="stylesheet" type="text/css" href="./../../../css/page.css"><link rel="icon" href="https://tinyletter.com/site/favicon.ico" type="image/x-icon"><!--[if IE]><style type="text/css">.tl-logo a { background:url(http://gallery.mailchimp.com/7f1f3a0cca670414e2146e475/images/tinyletter_sprite.png) no-repeat -148px 0 transparent; }</style><![endif]--><meta name="og:url" content="http://tinyletter.com/Lution/letters/message-2"><meta property="og:title" content="支教总结"><meta property="og:description" content="."><meta property="og:site_name" content="TinyLetter"><meta property="og:type" content="article"><style type="text/css">/* Customizable Theme Bits */body {background-color: #BBBBBB;}</style></head><body style="">
+<div class="wrapper"><div class="container paper-stack"><div id="message-heading"><div class="date"> December 22, 2017 </div><h1 class="subject">
+快结束了
+</h1><div class="by-line"> by Lution </div><div class="header-arrow-border"></div><div class="header-arrow"></div></div><div class="message-body"> <p>&nbsp;</p>
+<p>&nbsp; &nbsp;
+<center>-_-</center>
+<center>同时，考研人加油！！！</center>
+<p>以下为个人劳动成果，请勿抄袭</p>
+<p>未完待续</p>
+傅里叶变换学习总结及其应用
+本学期我们开展了信号与系统课程，同时选修了嵌入式系统课程。在嵌入式系统的课题中，我们对图像模式匹配（机器学习）以及声音多普勒效应检测速度等主题进行了软件开发，了解并应用了许多傅里叶变换的知识，同时在Ｐｙｔｈｏｎ下对实现了几个傅里叶变换有关的实际处理算法。这无疑加深了我们对傅里叶变换的认识。
+傅里叶变换
+物理学家可以把自然界中大多数复杂的波分解为许许多多简单的波的组合，实际上，这是傅里叶变换的功劳。傅里叶变换把一个信号用许多组成这个信号的不同频率的信号表示。当谈论傅里叶变换的时候，经常讨论声波信号。如果你能“看见”声音信号，它就像空气分子一样十分活泼快速地上下来回波动。但是十分奇怪，当你听见声音时，你不会感觉空气在上下波动，而是听见各种频率的声音。比如说，当有人在钢琴上弹奏中央ｃ，你不会感觉你的耳朵每秒被敲打２６１次，你仅仅只会听见一个单一的音调。这个不停推来搡去的运动就是是声音信号，而你听到的那个音调就是这个信号的傅里叶变换。声音的傅里叶变换相对于其他的信号更容易理解，当你想到一个声音或演奏一种乐器，相对于所谓的空气分子的上下来回波动，你更容易想到声音的频率。
+实际上，当用数字存储器来存储信号时，声音本身会被记录（这就是常见的ｗａｖ文件），但如今更多地是记录声音的傅里叶变换(也就是它的各个频率的分量，这就是所谓的mp3文件)，当一个扬声器要播放这个声音时，所记录的傅里叶变换就被还原为普通的声音信号。在傅里叶变换的形式下，很容易去过滤信号。比如说当你调节你的音乐播放器的均衡器，调高低音或降低高音，实际上你做的事情是告诉你的播放器设备在把信号输送给扬声器之前，对不同频率的部分乘以不同的数值，把低频部分乘以较大数值，高频部分乘以较小数值来达到目的。
+然而，声学只是傅里叶变换的最简单的应用，图像处理方面是傅里叶变换的另一方面的应用。一副图像也是一种信号，不同于声音信号，她是一种二维的信号。同样的，它的傅里叶变换也是二维的。在电脑上对图像信号做傅里叶变换发现，大多数值都是处于低频，因为大多数相片在一个很小的距离内变换并不会十分剧烈。所以高频信号并不是很重要。这是ｊｐｅｇ文件编码和压缩背后的思想
+虽然数字技术已经为傅里叶变换带来了巨大的应用，但这不是它唯一的用途。在数学和物理中，你会发现许多事情的背后都有傅里叶变换的影子，任何时候波都会与某些事情有关，而波的后面就是傅里叶变换。通常，用简单的东西来描述问题会简化问题，把一个复杂的系统分解为简单的波，虽然这可能只是一个近似，然后观察这些独立的、简单的波是如何发挥作用的。最后把这些独立的作用叠加起来，重建整个系统的作用效果。基本的，很容易处理“sin(x)”,但是很难处理“f(x)”。
+在量子力学中，粒子位置的傅里叶变换就是该粒子的动量。通常的，当粒子有较高的动量和能量，它就有一个较高的频率。把傅里叶变换应用于量子力学，是导出海森堡不确定原理的最有效、直接的方法之一。
+数学方面，许多困难的难以直接解决的问题通过傅里叶变换后可以变得更容易。在函数的运算中，比如卷积，变得可行。尽管跟多时候傅里叶变换只是把问题变得更糟糕。
+傅里叶变换可以把符合一定条件的连续或离散信号表示成三角函数和或他们的积分的线性组合。把信号从时域或频域角度看成许多小信号的叠加，以便于后面的分析处理过程。
+习惯上，我们经常由时间的角度去看待一个信号，实际上这是从时间的角度来分解信号。每一个时间点与信号上的某个值对应，所有的时间点的信号叠加起来便组成了这个信号,每一个时间点的信号包含了这个叠加信号的所有频率。做傅里叶变换，实际上就是把这个叠加的过程从时间角度变为了频率角度，每一个频率的小信号存在于这个叠加信号所有的时间区域。傅里叶变换把信号由时域映射到频域，逆傅里叶变换则是相反。对信号进行傅里叶变换，得到的是此信号的频域特性，幅度和相位。幅度是表示信号某个频率所占的大小。
+在工程上傅里叶变换有一个很有趣的应用，傅里叶变换可以找到看似毫无规律的、杂乱无章的信号中的基本组成正弦信号，根据机器齿轮半径、转速等信息，对比前后变化，可以分析出机器的故障位置。
+</br>
+<p>同时对coding提出表扬，刚刚它给我发来个圣诞祝福,乱码的话按下Ｆ１２</p>
+remote:  __________________________________________________
+remote: |                    _                             |
+remote: | /|,/ _   _ _      / ` /_  _ .  _ _/_ _ _   _    _|
+remote: |/  / /_' / / /_/  /_, / / / / _\  /  / / / /_| _\ |
+remote: |             _/                                   |
+remote: |                ~~* uestcman *~~                | 
+remote: |__________________________________________________| 
+remote: 
+remote: 
+remote:            *             ,
+remote:                        _/^\_
+remote:                       <     >
+remote:      <em>                 /.-.\         </em>
+remote:               <em>        `/&\`                   </em>
+remote:                       ,@.*;@,
+remote:                      /_o.I %_\    *
+remote:         *           (`'--:o(_@;
+remote:                    /`;--.,__ `')             *
+remote:                   ;@`o % O,*`'`&\ 
+remote:             <em>    (`'--)_@ ;o %'()\      </em>
+remote:                  /`;--._`''--._O'@;
+remote:                 /&*,()~o`;-.,_ `""`)
+remote:      <em>          /`,@ ;+& () o</em>`;-';\
+remote:                (`""--.,_0 +% @' &()\
+remote:                /-.,_    ``''--....-'`)  *
+remote:           *    /@%;o`:;'--,.__   __.'\
+remote:               ;<em>,&(); @ % &^;~`"`o;@();         </em>
+remote:               /(); o^~; & ().o@*&`;&%O\
+remote:               `"="==""==,,,.,="=="==="`
+remote:       _____.----.0--''---------...___...-----._
+remote:      '`          (\    <em>  \</em>/  ___\\0//___       
+remote:         =,        \)_       %  |\\ | | \\|  ~                  
+remote:                .--' ')   @     | \\| |\ \|         
+remote:       _0     o(  )_-\  .  .,   |\\_|_|_\\|    `    
+remote:                `"""` `         `-==--===-`        
+remote: 
+remote: .:<em>~</em>:._.:<em>~</em>:._.:<em>~</em>:._.:<em>~</em>:._.:<em>~</em>:._.:<em>~</em>:.:<em>~</em>:
+remote:
+<br><br></p>
+</div><div class="tl-logo"><a href="http://tinyletter.com/" target="_blank"> tinyletter </a></div></div></div>
+
+
+<!--
+remote:  __________________________________________________
+remote: |                    _                             |
+remote: | /|,/ _   _ _      / ` /_  _ .  _ _/_ _ _   _    _|
+remote: |/  / /_' / / /_/  /_, / / / / _\  /  / / / /_| _\ |
+remote: |             _/                                   |
+remote: |                ~~** uestcman **~~                | 
+remote: |__________________________________________________| 
+remote: 
+remote: 
+remote:            *             ,
+remote:                        _/^\_
+remote:                       <     >
+remote:      *                 /.-.\         *
+remote:               *        `/&\`                   *
+remote:                       ,@.*;@,
+remote:                      /_o.I %_\    *
+remote:         *           (`'--:o(_@;
+remote:                    /`;--.,__ `')             *
+remote:                   ;@`o % O,*`'`&\ 
+remote:             *    (`'--)_@ ;o %'()\      *
+remote:                  /`;--._`''--._O'@;
+remote:                 /&*,()~o`;-.,_ `""`)
+remote:      *          /`,@ ;+& () o*`;-';\
+remote:                (`""--.,_0 +% @' &()\
+remote:                /-.,_    ``''--....-'`)  *
+remote:           *    /@%;o`:;'--,.__   __.'\
+remote:               ;*,&(); @ % &^;~`"`o;@();         *
+remote:               /(); o^~; & ().o@*&`;&%O\
+remote:               `"="==""==,,,.,="=="==="`
+remote:       _____.----.0--''---------...___...-----._
+remote:      '`          (\    *  \*/  ___\\0//___       
+remote:         =,        \)_       %  |\\ | | \\|  ~                  
+remote:                .--' ')   @     | \\| |\ \|         
+remote:       _0     o(  )_-\  .  .,   |\\_|_|_\\|    `    
+remote:                `"""` `         `-==--===-`        
+remote: 
+remote: .:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:._.:*~*:.:*~*:
+remote: 
+-->
+</body></html>
