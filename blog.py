@@ -162,18 +162,18 @@ compose on the top of these words plz
 please write title on the first line
 and do not delete these words
 '''
-        with open(systemPath+"/md"+TheTime().year_month_day()+".md",'w')as f:
+        with open(systemPath+"/md/"+TheTime().year_month_day()+".md",'w')as f:
             f.write(precontent)
         try:
-            os.system("vim "+systemPath+"/md"+TheTime().year_month_day()+".md")
+            os.system("vim "+systemPath+"/md/"+TheTime().year_month_day()+".md")
         except:
             print"调用vim失败"
-        f=open(systemPath+"/md"+TheTime().year_month_day()+".md",'r')
+        f=open(systemPath+"/md/"+TheTime().year_month_day()+".md",'r')
         self.newpageTitle=f.readline().strip().lstrip().rstrip()#不要为难我，标题里面最好不要特殊字符
         if self.newpageTitle=="":
             self.newpageTitle=TheTime().year_month_day()
         try:
-            shutil.copy(systemPath+"/md"+TheTime().year_month_day()+".md",systemPath+"/docs"+self.newpageTitle+".md")
+            shutil.copy(systemPath+"/md/"+TheTime().year_month_day()+".md",systemPath+"/docs/"+self.newpageTitle+".md")
         except:
             print "复制文件到docs目录失败，这可能是由于标题包含特殊符号"
         self.build()
@@ -201,6 +201,8 @@ def exeThePa(inputPa):
         blog().newpage()
     elif inputPa in ['']:
         pass
+    elif inputPa in ['exit','e','Exit','-e']:
+        exit()
     else:
         Information().ParameterFalse()
 
