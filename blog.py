@@ -7,6 +7,7 @@ import ConfigParser
 import time
 import os
 import shutil
+import yaml
 class CheckStructure():
     def __init__(self):
         global systemPath
@@ -170,14 +171,30 @@ and do not delete these words
             print"调用vim失败"
         f=open(systemPath+"/md/"+TheTime().year_month_day()+".md",'r')
         self.newpageTitle=f.readline().strip().lstrip().rstrip()#不要为难我，标题里面最好不要特殊字符
+        f.close()
         if self.newpageTitle=="":
             self.newpageTitle=TheTime().year_month_day()
         try:
             shutil.copy(systemPath+"/md/"+TheTime().year_month_day()+".md",systemPath+"/docs/"+self.newpageTitle+".md")
         except:
             print "复制文件到docs目录失败，这可能是由于标题包含特殊符号"
+        self.addConfig()
         self.build()
         self.deploy()
+    
+    def addConfig(self):
+        print self.newpageTitle
+    @classmethod
+    def readYml(cls):
+        f=open(systemPath+"/mkdocs.yml")
+        cls.ymlContent=yaml.load(f)
+        f.close()
+        cls.writeYml()
+    @classmethod
+    def writeYml(cls):
+        f=open(systemPath+"/mkdocs.yml",'w')
+        yaml.dump(cls.ymlContent,f)
+        f.close
     @classmethod
     def build(cls):
         try:
@@ -203,6 +220,8 @@ def exeThePa(inputPa):
         pass
     elif inputPa in ['exit','e','Exit','-e']:
         exit()
+    elif inputPa in ['yaml','yml']:
+        blog().readYml()
     else:
         Information().ParameterFalse()
 
