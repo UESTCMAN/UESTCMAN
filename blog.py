@@ -68,6 +68,7 @@ class ConfigFile():
         content='''
 [system]
 welcomeMessage=True
+todayPage=0
 [series]
 [auto]
 build=True
@@ -82,8 +83,9 @@ deploy=True
         else:
             exit()
     def getConfig(self,section,key):
-        self.config.get(section,key)
+        theconfig=self.config.get(section,key)
         self.updateConfig()
+        return theconfig
     def setConfig(self,section,key,value):
         self.config.set(section,key,value)
         self.updateConfig()
@@ -94,7 +96,7 @@ deploy=True
     def hasSection(self,section):
         return self.config.has_section(section)
     def hasOption(self,section,option):
-        return self.config.has_option(option)
+        return self.config.has_option(section,option)
     def TrueOrFalse(self,section,key):
         if self.config.get(section,key) in ["True","true"]:
             return True
@@ -144,6 +146,7 @@ class Information():
 
 class blog():
     def newpage(self):
+        self.todayPage=int(ConfigFile().getConfig('system','todaypage'))
         self.series="daily"
         precontent='''
 
@@ -165,35 +168,43 @@ compose on the top of these words plz
 please write title on the first line
 and do not delete these words
 '''
-        with open(systemPath+"/md/"+TheTime().year_month_day()+".md",'w')as f:
+        with open(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage+1)+".md",'w')as f:
             f.write(precontent)
         try:
-            os.system("vim "+systemPath+"/md/"+TheTime().year_month_day()+".md")
+            os.system("vim "+systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage+1)+".md")
         except:
             print"调用vim失败"
-        f=open(systemPath+"/md/"+TheTime().year_month_day()+".md",'r')
+        f=open(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage+1)+".md",'r')
         self.newpageTitle=f.readline().strip().lstrip().rstrip()#不要为难我，标题里面最好不要特殊字符
         newseries=f.readline().strip().lstrip().rstrip()#第二行写文章所属的系列
         f.close()
-        if newseries!="":
+        if not (newseries==""):
             self.series=newseries
+        #接下来需要看这个文章所属系列是否存在
+        #不存在就写入配置文件
+        #存在就把文章添加到对应系列
+        #在addConfig方法内完成
         if self.newpageTitle=="":
             self.newpageTitle=TheTime().year_month_day()
-        try:
-            shutil.copy(systemPath+"/md/"+TheTime().year_month_day()+".md",systemPath+"/docs/"+self.newpageTitle+".md")#复制文件
-        except:
-            print "复制文件到docs目录失败，这可能是由于标题包含特殊符号"
-        #self.addConfig()#写入文章的配置
+
+        self.addConfig()#写入文章的配置
         if ConfigFile().TrueOrFalse('auto','build'):
             self.build()
         if ConfigFile().TrueOrFalse('auto','deploy'):
             self.deploy()
     
-    def addConfig(self,thetype):
+    def addConfig(self):
         self.readYml()
-        if thetype=='':
-            pass
-        print self.ymlContent
+        if not ConfigFile().hasOption('series',self.series):
+            ConfigFile().setConfig('series',self.series,'True')#在config内写入新系列
+        if not os.path.exists(systemPath+'/docs/'+self.series):
+            os.makedirs(systemPath+'docs/'+self.series)
+        try:
+            shutil.copy(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage+1)+".md",systemPath+"/docs/"+self.series+'/'+self.newpageTitle+".md")#复制文件
+        except:
+            print "复制文件到docs目录失败，这可能是由于标题包含特殊符号"
+        pages=self.ymlContent.get('pages')
+        print pages
         self.writeYml()
 
     def readYml(self):
