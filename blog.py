@@ -173,8 +173,18 @@ and do not delete these words
             f.write(precontent)
         try:
             os.system("vim "+systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage)+".md")
+            f=open(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage)+".md",'r')
+            if f.read()==precontent:
+                print"未编辑!"
+                self.todayPage=int(ConfigFile().getConfig('system','todaypage'))-1
+                ConfigFile().setConfig('system','todaypage',self.todayPage)
+                f.close()
+                sys.exit()#此处的退出特性有点特别，以前我没见过
+            f.close()
+
         except:
             print"调用vim失败"
+            sys.exit()
         f=open(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage)+".md",'r')
         self.newpageTitle=f.readline().strip().lstrip().rstrip()#不要为难我，标题里面最好不要特殊字符
         newseries=f.readline().strip().lstrip().rstrip()#第二行写文章所属的系列
@@ -196,23 +206,54 @@ and do not delete these words
         
     
     def addConfig(self):
+        #SeriesBigNameExist=False
+        pageExist=False
         self.readYml()
         if not ConfigFile().hasOption('series',self.series):
             ConfigFile().setConfig('series',self.series,'True')#在config内写入新系列
+        #在yaml中写入这个系列
+        pages=self.ymlContent.get("pages")
+        for item in pages:
+            for key,value in item.items():
+                if key=="Series":
+                    for item2 in value:
+                        for key2,value2 in item2.items():
+                            if (key2==self.series+' '+self.newpageTitle):
+                                pageExist=True
+                                choice=raw_input("系列名和文章名重复!是否自动处理？Y/N")
+                                if choice=="N":
+                                    self.newpageTitle=raw_input("请输入新文章名")
+                                else:
+                                    self.newpageTitle=self.newpageTitle+TheTime().year_month_day()
+                                value.append({self.series+' '+self.newpageTitle:self.series+'/'+self.newpageTitle+".md"})
+                    if not pageExist:
+                        value.append({self.series+' '+self.newpageTitle:self.series+'/'+self.newpageTitle+".md"})
+                        pageExist=True
+                    
+            '''
+            #这段代码有bug，注释了，需要在ymal里添加Series系列
+            if not (SeriesBigNameExist==True):
+                pages.append({"Series":[{'Home':'index.md'}]})
+                SeriesBigNameExist=True
+                for key,value in item.items():
+                    if key=="Series":
+                        value.append({self.series+' '+self.newpageTitle:self.series+'/'+self.newpageTitle+".md"})
+            '''
         if not os.path.exists(systemPath+'/docs/'+self.series):
-            os.makedirs(systemPath+'docs/'+self.series)
+            os.makedirs(systemPath+'/docs/'+self.series)
         try:
             shutil.copy(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage)+".md",systemPath+"/docs/"+self.series+'/'+self.newpageTitle+".md")#复制文件
         except:
             print "复制文件到docs目录失败，这可能是由于标题包含特殊符号"
         pages=self.ymlContent.get('pages')
-        print pages
         self.writeYml()
-
+    def test(self):
+        self.readYml()
+        pages=self.ymlContent.get("pages")
+        print pages
     def readYml(self):
         f=open(systemPath+"/mkdocs.yml")
         self.ymlContent=yaml.load(f)
-        print self.ymlContent
         f.close()
         self.writeYml()
     
@@ -256,9 +297,11 @@ def exeThePa(inputPa):
     elif inputPa in ['s','server','serve']:
         blog().server()
     elif inputPa in ['d','deploy','-d','D']:
-        blog.deploy()
+        blog().deploy()
     elif inputPa in ['b','build','-b','B']:
-        blog.build()
+        blog().build()
+    elif inputPa in ['t','test','T']:
+        blog().test()
     else:
         Information().ParameterFalse()
 

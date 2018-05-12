@@ -1,10 +1,11 @@
 pages:
 - {Home: index.md}
-- User Guide:
-  - {Writing your docs: user-guide/writing-your-docs.md}
-  - {Styling your docs: user-guide/styling-your-docs.md}
-- About:
-  - {License: about/license.md}
-  - {Release Notes: about/release-notes.md}
+- {About: about.md}
+- Series:
+  - {Home: index.md}
+  - ? !!binary |
+      ZGFpbHkgtdrSu8aqvs3Kx8v5zr21xMvpy+nE7g==
+    : !!binary |
+      ZGFpbHkvtdrSu8aqvs3Kx8v5zr21xMvpy+nE7i5tZA==
 site_name: MkLorum
 theme: material
