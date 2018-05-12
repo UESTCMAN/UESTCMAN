@@ -146,7 +146,8 @@ class Information():
 
 class blog():
     def newpage(self):
-        self.todayPage=int(ConfigFile().getConfig('system','todaypage'))
+        self.todayPage=int(ConfigFile().getConfig('system','todaypage'))+1
+        ConfigFile().setConfig('system','todaypage',self.todayPage)
         self.series="daily"
         precontent='''
 
@@ -168,13 +169,13 @@ compose on the top of these words plz
 please write title on the first line
 and do not delete these words
 '''
-        with open(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage+1)+".md",'w')as f:
+        with open(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage)+".md",'w')as f:
             f.write(precontent)
         try:
-            os.system("vim "+systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage+1)+".md")
+            os.system("vim "+systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage)+".md")
         except:
             print"调用vim失败"
-        f=open(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage+1)+".md",'r')
+        f=open(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage)+".md",'r')
         self.newpageTitle=f.readline().strip().lstrip().rstrip()#不要为难我，标题里面最好不要特殊字符
         newseries=f.readline().strip().lstrip().rstrip()#第二行写文章所属的系列
         f.close()
@@ -192,6 +193,7 @@ and do not delete these words
             self.build()
         if ConfigFile().TrueOrFalse('auto','deploy'):
             self.deploy()
+        
     
     def addConfig(self):
         self.readYml()
@@ -200,7 +202,7 @@ and do not delete these words
         if not os.path.exists(systemPath+'/docs/'+self.series):
             os.makedirs(systemPath+'docs/'+self.series)
         try:
-            shutil.copy(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage+1)+".md",systemPath+"/docs/"+self.series+'/'+self.newpageTitle+".md")#复制文件
+            shutil.copy(systemPath+"/md/"+TheTime().year_month_day()+str(self.todayPage)+".md",systemPath+"/docs/"+self.series+'/'+self.newpageTitle+".md")#复制文件
         except:
             print "复制文件到docs目录失败，这可能是由于标题包含特殊符号"
         pages=self.ymlContent.get('pages')
@@ -253,6 +255,10 @@ def exeThePa(inputPa):
         blog().readYml()
     elif inputPa in ['s','server','serve']:
         blog().server()
+    elif inputPa in ['d','deploy','-d','D']:
+        blog.deploy()
+    elif inputPa in ['b','build','-b','B']:
+        blog.build()
     else:
         Information().ParameterFalse()
 
