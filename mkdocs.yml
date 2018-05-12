@@ -7,5 +7,6 @@ pages:
       ZGFpbHkgtdrSu8aqvs3Kx8v5zr21xMvpy+nE7g==
     : !!binary |
       ZGFpbHkvtdrSu8aqvs3Kx8v5zr21xMvpy+nE7i5tZA==
+  - {day day: day/day.md}
 site_name: MkLorum
 theme: material
